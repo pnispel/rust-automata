@@ -120,6 +120,7 @@ impl<S: Clone + Eq + Hash, I: Eq + Hash + Copy> NFA<S, I> {
             for a in alphabet.iter() {
                 let mut new_state = self.reachable_states(&cur_state, Input(*a));
                 self.epsilon_closure(&mut new_state);
+                self.anything_closure(&mut new_state);
 
                 let new_state_set: BTreeSet<_> = new_state.clone().into_iter().collect();
                 if new_state.len() > 0 {
@@ -171,6 +172,17 @@ impl<S: Clone + Eq + Hash, I: Eq + Hash + Copy> NFA<S, I> {
     fn epsilon_closure(&self, states: &mut HashSet<S>) {
         loop {
             let new_states = self.reachable_states(states, Epsilon);
+            let old_len = states.len();
+            states.extend(new_states);
+            if old_len == states.len() {
+                break;
+            }
+        }
+    }
+
+    fn anything_closure(&self, states: &mut HashSet<S>) {
+        loop {
+            let new_states = self.reachable_states(states, Anything);
             let old_len = states.len();
             states.extend(new_states);
             if old_len == states.len() {
