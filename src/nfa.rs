@@ -53,6 +53,10 @@ impl<'a, S: 'a + Hash + Eq + Copy, I: Hash + Eq + Copy> Iterator for NFAIter<'a,
                     for item in set {
                         self.queue.push_back((item, pos + 1))
                     }
+                } else if let Some(set) = self.transitions.get(&(*state, Anything)) {
+                    for item in set {
+                        self.queue.push_back((item, pos + 1))
+                    }
                 }
             }
             if let Some(set) = self.transitions.get(&(*state, Epsilon)) {
