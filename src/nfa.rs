@@ -199,23 +199,27 @@ impl<S, I> Automaton for NFA<S, I> where S: Hash + Eq + Copy, I: Hash + Eq + Cop
     type State = S;
     type Alphabet = I;
 
-    fn run(&self, s: Vec<I>) -> Option<S> {
+    fn run(&self, s: Vec<I>) -> Option<Vec<S>> {
         let mut queue = VecDeque::new();
+        let mut path = vec!(self.start);
         queue.push_back((self.start, 0));
         while let Some((state, pos)) = queue.pop_front() {
             if let Some(set) = self.transitions.get(&(state, Epsilon)) {
                 for item in set {
+                    path.push(item.clone());
                     queue.push_back((*item, pos))
                 }
             }
 
             if pos == s.len() {
                 if self.accept_states.contains(&state) {
-                    return Some(state)
+                    path.push(state.clone());
+                    return Some(path)
                 }
             } else {
                 if let Some(set) = self.transitions.get(&(state, Input(s[pos]))) {
                     for item in set {
+                        path.push(item.clone());
                         queue.push_back((*item, pos + 1))
                     }
                 }

@@ -82,20 +82,20 @@ impl<S, I> Automaton for DFA<S, I> where S: Hash + Eq + Copy, I: Hash + Eq + Cop
     type State = S;
     type Alphabet = I;
 
-    fn run(&self, s: Vec<I>) -> Option<S> {
+    fn run(&self, s: Vec<I>) -> Option<Vec<S>> {
         let mut cur_state = self.start;
         let mut path = vec!(self.start);
         for c in s {
             match self.transitions.get(&(cur_state, c)) {
                 Some(s) => {
-                    cur_state = *s
+                    cur_state = *s;
                     path.push(cur_state.clone());
                 }
                 None => return None
             }
         }
         if self.accept_states.contains(&cur_state) {
-            Some(cur_state, path)
+            Some(path)
         } else {
             None
         }
