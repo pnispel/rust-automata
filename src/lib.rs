@@ -15,3 +15,23 @@ pub trait Automaton {
     fn run(&self, Vec<Self::Alphabet>) -> Option<Self::State>;
     fn output_graphviz(&self, filename: &str) where Self::State: Display, Self::Alphabet: Display;
 }
+
+pub mod automaton {
+    #[macro_export]
+    macro_rules! map {
+        ($($key:expr => $val:expr),*) => ({
+            let mut h = ::std::collections::HashMap::new();
+            $(h.insert($key, $val);)*
+            h
+        })
+    }
+    
+    #[macro_export]
+    macro_rules! set {
+        ($($elem:expr),*) => ({
+            let mut s = ::std::collections::HashSet::new();
+            $(s.insert($elem);)*
+            s
+        })
+    }
+}
