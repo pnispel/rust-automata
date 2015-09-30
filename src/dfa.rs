@@ -5,6 +5,7 @@ use std::fs::OpenOptions;
 use std::collections::{HashSet, HashMap};
 use std::hash::Hash;
 
+#[derive(Debug, Clone)]
 pub struct DFA<S: Eq + PartialEq + Hash = usize, I: Eq + PartialEq + Hash = char> {
     pub start: S,
     pub accept_states: HashSet<S>,
