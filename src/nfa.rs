@@ -98,7 +98,7 @@ impl<S: Clone + Eq + Hash = usize, I: Eq + Hash + Copy = char> NFA<S, I> {
         NFAIter { queue: queue, input: input, transitions: &self.transitions }
     }
 
-    pub fn into_dfa<T: Clone>(self) -> (DFA<usize, I>) where S: Ord {
+    pub fn into_dfa<T: Clone>(self) -> DFA<usize, I> where S: Ord {
         let mut alphabet = HashSet::new();
         for (trans, _) in self.transitions.iter() {
             // Don't add epsilon
@@ -141,7 +141,7 @@ impl<S: Clone + Eq + Hash = usize, I: Eq + Hash + Copy = char> NFA<S, I> {
             }
         }
 
-        return DFA::new(0, accept_states, transitions);
+        DFA::<usize, I>::new(0, accept_states, transitions)
     }
 
     fn get_accept(&self, states: &HashSet<S>) -> Option<S> {
