@@ -25,6 +25,7 @@ pub struct NFA<S: Eq + Hash = usize, I: Eq + Hash = char> {
 
 #[derive(Debug, Hash, Eq, PartialEq, Copy, Clone)]
 pub enum Transition<I> {
+    Any,
     Epsilon,
     Input(I)
 }
