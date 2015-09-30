@@ -98,9 +98,10 @@ impl<S: Clone + Eq + Hash = usize, I: Eq + Hash + Copy = char> NFA<S, I> {
         NFAIter { queue: queue, input: input, transitions: &self.transitions }
     }
 
-    pub fn into_dfa<T: Clone>(self) -> DFA<usize, I> where S: Ord {
+    pub fn into_dfa(&self) -> DFA<usize, I> where S: Ord {
+        let clone = self.clone();
         let mut alphabet = HashSet::new();
-        for (trans, i) in self.transitions.iter() {
+        for (trans, _) in clone.transitions.iter() {
             // Don't add epsilon
             if let Input(c) = trans.1 {
                 alphabet.insert(c);
@@ -114,21 +115,21 @@ impl<S: Clone + Eq + Hash = usize, I: Eq + Hash + Copy = char> NFA<S, I> {
         let mut get_id = || { let ret = id; id += 1; ret };
         let mut queue = VecDeque::new();
 
-        let mut init_state = set!(self.start.clone());
-        self.epsilon_closure(&mut init_state);
+        let mut init_state = set!(clone.start.clone());
+        clone.epsilon_closure(&mut init_state);
         queue.push_back((get_id(), init_state.clone()));
         states.insert(init_state.into_iter().collect(), 0);
         while let Some((cur_id, cur_state)) = queue.pop_front() {
             for a in alphabet.iter() {
-                let mut new_state = self.reachable_states(&cur_state, Input(*a));
-                self.epsilon_closure(&mut new_state);
-                self.anything_closure(&mut new_state);
+                let mut new_state = clone.reachable_states(&cur_state, Input(*a));
+                clone.epsilon_closure(&mut new_state);
+                clone.anything_closure(&mut new_state);
 
                 let new_state_set: BTreeSet<_> = new_state.clone().into_iter().collect();
                 if new_state.len() > 0 {
                     if let Vacant(entry) = states.entry(new_state_set.clone()) {
                         let id = get_id();
-                        if let Some(s) = self.get_accept(&new_state) {
+                        if let Some(s) = clone.get_accept(&new_state) {
                             accept_states.insert(id);
                         }
                         queue.push_back((id, new_state));
