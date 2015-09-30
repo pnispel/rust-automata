@@ -108,8 +108,8 @@ impl<S: Clone + Eq + Hash = usize, I: Eq + Hash + Copy = char> NFA<S, I> {
         }
 
         let mut states = HashMap::new();
-        let mut accept_states = HashSet::new();
-        let mut transitions = HashMap::new();
+        let mut accept_states: HashSet<usize> = HashSet::new();
+        let mut transitions: HashMap<(usize, I), usize> = HashMap::new();
         let mut id = 0;
         let mut get_id = || { let ret = id; id += 1; ret };
         let mut queue = VecDeque::new();
