@@ -5,15 +5,25 @@ use std::fs::OpenOptions;
 use std::collections::{HashSet, HashMap};
 use std::hash::Hash;
 
+use nfa::Transition;
+use nfa::Transition::{Input, Epsilon, Anything};
+
 #[derive(Debug, Clone)]
 pub struct DFA<S: Eq + PartialEq + Hash = usize, I: Eq + PartialEq + Hash = char> {
     pub start: S,
     pub accept_states: HashSet<S>,
-    pub transitions: HashMap<(S, I), S>
+    pub transitions: HashMap<(S, Transition<I>), S>
+}
+
+pub struct DFAIter<'a, S: 'a, I: 'a> {
+    input: Vec<I>,
+    transitions: &'a HashMap<(S, Transition<I>), S>,
+    pos: usize,
+    cur_state: &'a S
 }
 
 impl<S: Eq + Hash, I: Eq + Hash> DFA<S, I> {
-    pub fn new(start: S, accept_states: HashSet<S>, transitions: HashMap<(S, I), S>) -> DFA<S, I> {
+    pub fn new(start: S, accept_states: HashSet<S>, transitions: HashMap<(S, Transition<I>), S>) -> DFA<S, I> {
         DFA { start: start, accept_states: accept_states, transitions: transitions }
     }
 
@@ -25,16 +35,9 @@ impl<S: Eq + Hash, I: Eq + Hash> DFA<S, I> {
         &self.start
     }
 
-    pub fn get_transitions(&self) -> &HashMap<(S, I), S> {
+    pub fn get_transitions(&self) -> &HashMap<(S, Transition<I>), S> {
         &self.transitions
     }
-}
-
-pub struct DFAIter<'a, S: 'a, I: 'a> {
-    input: Vec<I>,
-    transitions: &'a HashMap<(S, I), S>,
-    pos: usize,
-    cur_state: &'a S
 }
 
 impl<'a, S: 'a + Hash + Eq + Copy, I: Hash + Eq + Copy> Iterator for DFAIter<'a, S, I> {
@@ -48,7 +51,8 @@ impl<'a, S: 'a + Hash + Eq + Copy, I: Hash + Eq + Copy> Iterator for DFAIter<'a,
             Some(self.cur_state)
         } else {
             let c = self.input[self.pos];
-            match self.transitions.get(&(*self.cur_state, c)) {
+
+            match self.transitions.get(&(*self.cur_state, Input(c))) {
                 Some(s) => {
                     self.pos += 1;
                     let ret = self.cur_state;
@@ -59,10 +63,22 @@ impl<'a, S: 'a + Hash + Eq + Copy, I: Hash + Eq + Copy> Iterator for DFAIter<'a,
                     // Watch out for overflow
                     assert!(self.input.len() < self.input.len() + 1);
 
-                    // Skip the rest of the input
-                    self.pos = self.input.len() + 1;
+                    match self.transitions.get(&(*self.cur_state, Anything)) {
+                        Some(s) => {
+                            self.pos += 1;
+                            let ret = self.cur_state;
+                            self.cur_state = &s;
+                            Some(ret)
+                        },
+                        None => {
+                            assert!(self.input.len() < self.input.len() + 1);
 
-                    Some(self.cur_state)
+                            // Skip the rest of the input
+                            self.pos = self.input.len() + 1;
+
+                            Some(self.cur_state)
+                        }
+                    }
                 }
             }
         }
@@ -88,12 +104,20 @@ impl<S, I> Automaton for DFA<S, I> where S: Hash + Eq + Copy, I: Hash + Eq + Cop
         let mut path = Vec::<I>::new();
 
         for c in s {
-            match self.transitions.get(&(cur_state, c)) {
+            match self.transitions.get(&(cur_state, Input(c))) {
                 Some(s) => {
                     cur_state = *s;
                     path.push(c);
                 }
-                None => return None
+                None => {
+                    match self.transitions.get(&(cur_state, Anything)) {
+                        Some(s) => {
+                            cur_state = *s;
+                            path.push(c);
+                        }
+                        None => return None
+                    }
+                }
             }
         }
         if self.accept_states.contains(&cur_state) {

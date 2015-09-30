@@ -103,9 +103,11 @@ impl<S: Clone + Eq + Hash = usize, I: Eq + Hash + Copy = char> NFA<S, I> {
         let mut alphabet = HashSet::new();
         for (trans, _) in clone.transitions.iter() {
             // Don't add epsilon
-            if let Input(c) = trans.1 {
-                alphabet.insert(c);
-            }
+            match trans.1 {
+                Input(c) => alphabet.insert(Input(c)),
+                Anything => alphabet.insert(Anything),
+                _ => {false},
+            };
         }
 
         let mut states = HashMap::new();
@@ -121,7 +123,7 @@ impl<S: Clone + Eq + Hash = usize, I: Eq + Hash + Copy = char> NFA<S, I> {
         states.insert(init_state.into_iter().collect(), 0);
         while let Some((cur_id, cur_state)) = queue.pop_front() {
             for a in alphabet.iter() {
-                let mut new_state = clone.reachable_states(&cur_state, Input(*a));
+                let mut new_state = clone.reachable_states(&cur_state, *a);
                 clone.epsilon_closure(&mut new_state);
                 clone.anything_closure(&mut new_state);
 
