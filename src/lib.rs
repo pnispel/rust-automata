@@ -12,7 +12,7 @@ pub trait Automaton {
     type State;
     type Alphabet;
 
-    fn run(&self, Vec<Self::Alphabet>) -> Option<Vec<Self::State>>;
+    fn run(&self, Vec<Self::Alphabet>) -> Option<Vec<Self::Alphabet>>;
 }
 
 pub mod automaton {
