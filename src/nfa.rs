@@ -125,7 +125,6 @@ impl<S: Clone + Eq + Hash = usize, I: Eq + Hash + Copy = char> NFA<S, I> {
             for a in alphabet.iter() {
                 let mut new_state = clone.reachable_states(&cur_state, *a);
                 clone.epsilon_closure(&mut new_state);
-                clone.anything_closure(&mut new_state);
 
                 let new_state_set: BTreeSet<_> = new_state.clone().into_iter().collect();
                 if new_state.len() > 0 {
