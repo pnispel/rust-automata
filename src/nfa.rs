@@ -141,7 +141,7 @@ impl<S: Clone + Eq + Hash = usize, I: Eq + Hash + Copy = char> NFA<S, I> {
             }
         }
 
-        DFA::new(0, accept_states, transitions)
+        return DFA::new(0, accept_states, transitions);
     }
 
     fn get_accept(&self, states: &HashSet<S>) -> Option<S> {
