@@ -100,7 +100,7 @@ impl<S: Clone + Eq + Hash = usize, I: Eq + Hash + Copy = char> NFA<S, I> {
 
     pub fn into_dfa<T: Clone>(self) -> DFA<usize, I> where S: Ord {
         let mut alphabet = HashSet::new();
-        for (trans, _) in self.transitions.iter() {
+        for (trans, i) in self.transitions.iter() {
             // Don't add epsilon
             if let Input(c) = trans.1 {
                 alphabet.insert(c);
@@ -108,8 +108,8 @@ impl<S: Clone + Eq + Hash = usize, I: Eq + Hash + Copy = char> NFA<S, I> {
         }
 
         let mut states = HashMap::new();
-        let mut accept_states: HashSet<usize> = HashSet::new();
-        let mut transitions: HashMap<(usize, I), usize> = HashMap::new();
+        let mut accept_states = HashSet::new();
+        let mut transitions = HashMap::new();
         let mut id = 0;
         let mut get_id = || { let ret = id; id += 1; ret };
         let mut queue = VecDeque::new();
@@ -141,7 +141,7 @@ impl<S: Clone + Eq + Hash = usize, I: Eq + Hash + Copy = char> NFA<S, I> {
             }
         }
 
-        DFA::<usize, I>::new(0, accept_states, transitions)
+        DFA::new(0, accept_states, transitions)
     }
 
     fn get_accept(&self, states: &HashSet<S>) -> Option<S> {
