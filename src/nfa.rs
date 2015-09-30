@@ -5,7 +5,7 @@ use std::io::Write;
 use std::collections::hash_map::Entry::Vacant;
 use std::collections::{HashSet, HashMap, VecDeque, BTreeSet};
 use std::hash::Hash;
-use nfa::Transition::{Input, Epsilon};
+use nfa::Transition::{Input, Epsilon, Anything};
 
 #[macro_export]
 macro_rules! set {
