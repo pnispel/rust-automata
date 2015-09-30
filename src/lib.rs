@@ -13,7 +13,6 @@ pub trait Automaton {
     type Alphabet;
 
     fn run(&self, Vec<Self::Alphabet>) -> Option<Self::State>;
-    fn output_graphviz(&self, filename: &str) where Self::State: Display, Self::Alphabet: Display;
 }
 
 pub mod automaton {
@@ -25,7 +24,7 @@ pub mod automaton {
             h
         })
     }
-    
+
     #[macro_export]
     macro_rules! set {
         ($($elem:expr),*) => ({

@@ -96,22 +96,6 @@ impl<S, I> Automaton for DFA<S, I> where S: Hash + Eq + Copy, I: Hash + Eq + Cop
             None
         }
     }
-
-    fn output_graphviz(&self, filename: &str) where S: Display, I: Display {
-        let mut options = OpenOptions::new();
-        let mut f = options.truncate(true).create(true).write(true).open(filename).unwrap();
-        write!(&mut f, "digraph nfa {{\n").unwrap();
-        write!(&mut f, "\tnode [shape = doublecircle]; ").unwrap();
-        for state in self.accept_states.iter() {
-            write!(&mut f, "{} ", state).unwrap();
-        }
-        write!(&mut f, ";\n").unwrap();
-        write!(&mut f, "\tnode [shape = circle];\n").unwrap();
-        for (trans, state) in self.transitions.iter() {
-            write!(&mut f, "\t{} -> {} [ label = \"{}\"]\n", trans.0, state, trans.1).unwrap();
-        }
-        write!(&mut f, "}}\n").unwrap();
-    }
 }
 
 #[cfg(test)]
