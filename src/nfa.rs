@@ -7,6 +7,7 @@ use std::collections::{HashSet, HashMap, VecDeque, BTreeSet};
 use std::hash::Hash;
 use nfa::Transition::{Input, Epsilon};
 
+#[macro_export]
 macro_rules! set {
     ($($elem:expr),*) => ({
         let mut s = ::std::collections::HashSet::new();
