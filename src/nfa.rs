@@ -98,7 +98,7 @@ impl<S: Clone + Eq + Hash, I: Eq + Hash + Copy> NFA<S, I> {
         NFAIter { queue: queue, input: input, transitions: &self.transitions }
     }
 
-    pub fn into_dfa<T: Clone>(self) -> DFA<(i32, i32), I> where S: Ord {
+    pub fn into_dfa<T: Clone>(self) -> DFA<usize, I> where S: Ord {
         let mut alphabet = HashSet::new();
         for (trans, _) in self.transitions.iter() {
             // Don't add epsilon
