@@ -6,9 +6,9 @@ use std::collections::{HashSet, HashMap};
 use std::hash::Hash;
 
 pub struct DFA<S: Eq + PartialEq + Hash = usize, I: Eq + PartialEq + Hash = char> {
-    start: S,
-    accept_states: HashSet<S>,
-    transitions: HashMap<(S, I), S>
+    pub start: S,
+    pub accept_states: HashSet<S>,
+    pub transitions: HashMap<(S, I), S>
 }
 
 impl<S: Eq + Hash, I: Eq + Hash> DFA<S, I> {
@@ -84,7 +84,8 @@ impl<S, I> Automaton for DFA<S, I> where S: Hash + Eq + Copy, I: Hash + Eq + Cop
 
     fn run(&self, s: Vec<I>) -> Option<Vec<I>> {
         let mut cur_state = self.start;
-        let mut path = vec!();
+        let mut path = Vec::<I>::new();
+
         for c in s {
             match self.transitions.get(&(cur_state, c)) {
                 Some(s) => {

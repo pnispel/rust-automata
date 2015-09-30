@@ -201,7 +201,8 @@ impl<S, I> Automaton for NFA<S, I> where S: Hash + Eq + Copy, I: Hash + Eq + Cop
 
     fn run(&self, s: Vec<I>) -> Option<Vec<I>> {
         let mut queue = VecDeque::new();
-        let mut path = vec!();
+        let mut path = Vec::<I>::new();
+
         queue.push_back((self.start, 0));
         while let Some((state, pos)) = queue.pop_front() {
             if let Some(set) = self.transitions.get(&(state, Epsilon)) {
