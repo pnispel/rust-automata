@@ -74,7 +74,7 @@ impl<'a, S: 'a + Hash + Eq + Copy, I: Hash + Eq + Copy> Iterator for NFAIter<'a,
     }
 }
 
-impl<S: Clone + Eq + Hash, I: Eq + Hash + Copy> NFA<S, I> {
+impl<S: Clone + Eq + Hash = usize, I: Eq + Hash + Copy = char> NFA<S, I> {
     pub fn new(start: S, accept_states: HashSet<S>,
                transitions: HashMap<(S, Transition<I>), HashSet<S>>) -> NFA<S, I> {
         NFA { start: start, accept_states: accept_states, transitions: transitions }
